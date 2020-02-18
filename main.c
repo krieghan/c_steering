@@ -1,15 +1,9 @@
-
-// C program to demonstrate 
-// drawing a circle using 
-// OpenGL 
 #include <stdio.h> 
 #include <stdlib.h>
 #include <GL/glut.h> 
 #include <math.h> 
-#include "world.h"
 #include "linkedlist.h"
 #include "game_element.h"
-#define pi 3.142857 
 
 World* world;
 

@@ -1,6 +1,5 @@
 #include <stdlib.h>
-#include "steering.h"
-#include "steeringbehaviors.h"
+#include "game_element.h"
 #include "linkedlist.h"
 #include "vector.h"
 
@@ -13,4 +12,3 @@ SteeringController* init_steering_controller(){
         &wander);
     return steering_controller;
 }
-

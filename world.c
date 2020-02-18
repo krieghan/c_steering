@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include "world.h"
 #include "game_element.h"
 #include "linkedlist.h"
 

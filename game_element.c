@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <GL/glut.h>
 #include "game_element.h"
-#include "steering.h"
 
 void render1(GameElement* game_element){
     float halfHeight = game_element->height / 2;
