@@ -1,5 +1,6 @@
 #include <stdio.h> 
 #include <stdlib.h>
+#include <time.h>
 #include <GL/glut.h> 
 #include <math.h> 
 #include "linkedlist.h"
@@ -50,6 +51,8 @@ void display(void)
  
 void handleTime(int timeElapsed){
     display();
+    int timeElapsed2 = glutGet(GLUT_ELAPSED_TIME);
+    world_update(world, timeElapsed2);
     glutTimerFunc(1, &handleTime, 0);
 }
 
@@ -57,10 +60,14 @@ void handleClick(int button, int state, int x, int y){
     int transformedY = world->height - y;
     if (button == GLUT_LEFT_BUTTON){
         if (state == GLUT_UP){
+            Vector position = {.x = x, .y = transformedY};
+            Vector velocity = {.x = 0, .y = 0};
             GameElement* ship = game_element_init(
-                x, transformedY,
-                0,
+                position,
+                velocity,
                 10, 10,
+                1,
+                1, .2,
                 0, 1, 0,
                 &render1);
             append_to_list(world->elements, ship);
@@ -70,6 +77,7 @@ void handleClick(int button, int state, int x, int y){
 
 int main (int argc, char** argv) 
 { 
+    srand(time(NULL));
     world = world_init(500, 500);
     glutInit(&argc, argv); 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); 

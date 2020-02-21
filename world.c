@@ -10,13 +10,13 @@ World* world_init(int height, int width){
     return world;
 }
 
-void update(World* world){
+void world_update(World* world, int timeElapsed){
     GameElement* current_element;
     LinkedListNode* current_node;
     current_node = world->elements->head;
     while(current_node){
         current_element = (GameElement*)current_node->data;
-        //current_element->update(current_game_element);
+        game_element_update(current_element, timeElapsed);
         current_node = current_node->next;
     }
 }

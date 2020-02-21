@@ -2,6 +2,7 @@
 #define GAMEELEMENT_H
 
 #include "linkedlist.h"
+#include "vector.h"
 
 //World
 typedef struct WorldStruct {
@@ -11,38 +12,55 @@ typedef struct WorldStruct {
 } World;
 
 World* world_init(int, int);
-void update(World*);
+void world_update(World*, int);
+
+struct SteeringControllerStruct;
+struct GameElementStruct;
 
 //Steering Controller:
 typedef struct SteeringControllerStruct {
     LinkedList* behaviors;
+    struct GameElementStruct* owner;
 } SteeringController;
-
-SteeringController* init_steering_controller();
 
 //Game Element
 typedef struct GameElementStruct {
     void (*render)(struct GameElementStruct*);
-    float xPosition, yPosition;
-    float heading;
+    Vector position;
+    Vector velocity;
+    Vector heading;
+    Vector heading_perp;
+    float direction_radians;
+    float direction_degrees;
+    float mass;
+    float max_force, max_speed;
     float height, width;
     float red, green, blue;
     SteeringController* steering_controller;
+    void (*update)(struct GameElementStruct*);
 } GameElement;
 
+SteeringController* init_steering_controller(GameElement*);
+Vector calculate_force(SteeringController*);
+
+
 GameElement* game_element_init(
+    Vector,
+    Vector,
+    float,
+    float,
     float, 
     float,
     float,
-    float,
-    float, 
     float, 
     float, 
     float,
     void (*render)(GameElement*));
+void game_element_update(GameElement*, int);
+void game_element_update_heading(GameElement*);
 void render1();
 
 //Steering Behaviors:
-void wander(GameElement* game_element);
+Vector wander(GameElement* game_element);
 
 #endif
