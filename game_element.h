@@ -13,6 +13,14 @@ typedef struct WorldStruct {
     int current_time;
 } World;
 
+typedef struct CanvasStruct {
+    World* world;
+    double screen_ratio, world_ratio;
+    int viewport_left, viewport_bottom, viewport_top, viewport_right;
+    int viewport_width, viewport_height;
+} Canvas;
+
+Canvas* canvas_init(World*);
 World* world_init(int, int);
 void world_update(World*, int);
 

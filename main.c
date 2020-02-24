@@ -8,6 +8,8 @@
 #include "game_element.h"
 
 World* world;
+Canvas* canvas;
+
 
 void display(void)
 { 
@@ -48,15 +50,15 @@ void setupView(int client_width, int client_height){
     if (world_ratio >= screen_ratio){
         viewport_left = 0;
         viewport_bottom = (int)((client_height - (client_width / world_ratio)) / 2);
-        //printf("case 1: %d %d %f %d\n", client_height, client_width, screen_ratio, viewport_bottom);
+        printf("case 1: %d %d %f %d %d\n", client_height, client_width, screen_ratio, viewport_left, viewport_bottom);
         viewport_width = (int)client_width;
         viewport_height = (int)(client_width / world_ratio);
     } else {
-        //printf("case 2\n");
         viewport_left = (int)((client_width - (client_height * world_ratio)) / 2);
         viewport_bottom = 0;
         viewport_width = (int)(client_height * world_ratio);
         viewport_height = client_height;
+        printf("case 2: %d %d %f %d %d\n", client_height, client_width, screen_ratio, viewport_left, viewport_bottom);
     }
 
     viewport_right = viewport_left + viewport_width;
@@ -72,6 +74,14 @@ void setupView(int client_width, int client_height){
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0, world_width, 0, world_height);
+    canvas->screen_ratio = screen_ratio;
+    canvas->world_ratio = world_ratio;
+    canvas->viewport_left = viewport_left;
+    canvas->viewport_bottom = viewport_bottom;
+    canvas->viewport_top = viewport_top;
+    canvas->viewport_right = viewport_right;
+    canvas->viewport_width = viewport_width;
+    canvas->viewport_height = viewport_height;
 }
 
 // function to initialize 
@@ -125,10 +135,10 @@ void handleClick(int button, int state, int x, int y){
             client_width = glutGet(GLUT_WINDOW_WIDTH);
             x_ratio = (double)client_height / world->height;
             y_ratio = (double)client_width / world->width;
-            transformedY = (client_height - y);
-            transformedX = x;
-            /*
+            transformedY = (client_height - y) * y_ratio;
+            transformedX = x * x_ratio;
             printf("%d %d\n", x, y);
+            /*
             printf("%f %f\n", x_ratio, y_ratio);
             printf("%d %d\n", transformedX, transformedY);
             */
@@ -151,6 +161,7 @@ int main (int argc, char** argv)
 { 
     srand(time(NULL));
     world = world_init(500, 500);
+    canvas = canvas_init(world);
     glutInit(&argc, argv); 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); 
       
