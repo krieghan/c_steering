@@ -61,7 +61,8 @@ void game_element_update(GameElement* game_element, int timeElapsed){
     force = vector_truncate(force, game_element->max_force);
     acceleration = vector_multiply_scalar(
             force,  
-            timeElapsed / (game_element->mass * 1000));
+            timeElapsed / (game_element->mass));
+    //printf("%d %f %f\n", timeElapsed, acceleration.x, acceleration.y);
     game_element->velocity = vector_truncate(
             vector_add(
                 game_element->velocity,
@@ -84,4 +85,23 @@ void game_element_update_heading(GameElement* game_element){
     game_element->direction_degrees =
         game_element->direction_radians * (180 / M_PI);
 
+}
+
+Wall* init_wall(double x1, double y1, double x2, double y2){
+    Wall* wall = malloc(sizeof(Wall));
+    Vector point1 = {.x = x1, .y = y1};
+    Vector point2 = {.x = x2, .y = y2};
+    wall->point1 = point1;
+    wall->point2 = point2;
+    return wall;
+}
+
+void wall_render(Wall* wall){
+    glPushMatrix();
+    glColor3f(1.0, 1.0, 1.0);
+    glBegin(GL_LINES);
+    glVertex2f(wall->point1.x, wall->point1.y);
+    glVertex2f(wall->point2.x, wall->point2.y);
+    glEnd();
+    glPopMatrix();
 }

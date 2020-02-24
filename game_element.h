@@ -6,9 +6,11 @@
 
 //World
 typedef struct WorldStruct {
-    LinkedList* elements;
+    LinkedList* moving_elements;
+    LinkedList* walls;
     int height;
     int width;
+    int current_time;
 } World;
 
 World* world_init(int, int);
@@ -39,6 +41,13 @@ typedef struct GameElementStruct {
     SteeringController* steering_controller;
     void (*update)(struct GameElementStruct*);
 } GameElement;
+
+typedef struct WallStruct {
+    Vector point1, point2;
+} Wall;
+
+Wall* init_wall(double, double, double, double);
+void wall_render(Wall*);
 
 SteeringController* init_steering_controller(GameElement*);
 Vector calculate_force(SteeringController*);
