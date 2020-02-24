@@ -50,7 +50,7 @@ void setupView(int client_width, int client_height){
     if (world_ratio >= screen_ratio){
         viewport_left = 0;
         viewport_bottom = (int)((client_height - (client_width / world_ratio)) / 2);
-        printf("case 1: %d %d %f %d %d\n", client_height, client_width, screen_ratio, viewport_left, viewport_bottom);
+        //printf("case 1: %d %d %f %d %d\n", client_height, client_width, screen_ratio, viewport_left, viewport_bottom);
         viewport_width = (int)client_width;
         viewport_height = (int)(client_width / world_ratio);
     } else {
@@ -58,7 +58,7 @@ void setupView(int client_width, int client_height){
         viewport_bottom = 0;
         viewport_width = (int)(client_height * world_ratio);
         viewport_height = client_height;
-        printf("case 2: %d %d %f %d %d\n", client_height, client_width, screen_ratio, viewport_left, viewport_bottom);
+        //printf("case 2: %d %d %f %d %d\n", client_height, client_width, screen_ratio, viewport_left, viewport_bottom);
     }
 
     viewport_right = viewport_left + viewport_width;
@@ -73,7 +73,7 @@ void setupView(int client_width, int client_height){
         viewport_height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0, world_width, 0, world_height);
+    gluOrtho2D(-1, world_width + 1, -1, world_height + 1);
     canvas->screen_ratio = screen_ratio;
     canvas->world_ratio = world_ratio;
     canvas->viewport_left = viewport_left;
@@ -89,16 +89,16 @@ void myInit (void)
 { 
     append_to_list(
         world->walls,
-        init_wall(1, 1, world->width, 1));
+        init_wall(0, 0, world->width, 0));
     append_to_list(
         world->walls,
-        init_wall(1, 1, 1, world->height));
+        init_wall(0, 0, 0, world->height));
     append_to_list(
         world->walls,
-        init_wall(1, world->height, world->width, world->height));
+        init_wall(0, world->height, world->width, world->height));
     append_to_list(
         world->walls,
-        init_wall(world->width, 1, world->width, world->height));
+        init_wall(world->width, 0, world->width, world->height));
     // making background color black as first  
     // 3 arguments all are 0.0 
     glClearColor(0.0, 0.0, 0.0, 0.0); 
@@ -133,15 +133,17 @@ void handleClick(int button, int state, int x, int y){
         if (state == GLUT_UP){
             client_height = glutGet(GLUT_WINDOW_HEIGHT);
             client_width = glutGet(GLUT_WINDOW_WIDTH);
-            x_ratio = (double)client_height / world->height;
-            y_ratio = (double)client_width / world->width;
-            transformedY = (client_height - y) * y_ratio;
-            transformedX = x * x_ratio;
-            printf("%d %d\n", x, y);
-            /*
-            printf("%f %f\n", x_ratio, y_ratio);
-            printf("%d %d\n", transformedX, transformedY);
-            */
+            x_ratio = (double)canvas->viewport_width / world->width;
+            y_ratio = (double)canvas->viewport_height / world->height;
+            transformedY = (
+                client_height - (y + canvas->viewport_bottom)) / y_ratio;
+            transformedX = (x - canvas->viewport_left) / x_ratio;
+            if (transformedX < 0 || 
+                transformedX > world->width || 
+                transformedY < 0 || 
+                transformedY > world->height){
+                return;
+            }
             Vector position = {.x = transformedX, .y = transformedY};
             Vector velocity = {.x = 0, .y = 0};
             GameElement* ship = game_element_init(
@@ -149,7 +151,7 @@ void handleClick(int button, int state, int x, int y){
                 velocity,
                 10, 10,
                 1,
-                100, .2,
+                100, 2,
                 0, 1, 0,
                 &render1);
             append_to_list(world->moving_elements, ship);
