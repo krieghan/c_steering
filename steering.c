@@ -3,11 +3,16 @@
 #include "linkedlist.h"
 #include "vector.h"
 
+extern World* world;
+
 SteeringController* init_steering_controller(GameElement* owner){
     SteeringController* steering_controller = malloc(
         sizeof(SteeringController));
     steering_controller->behaviors = init_linked_list();
     steering_controller->owner = owner;
+    append_to_list(
+        steering_controller->behaviors,
+        &avoid_walls);
     append_to_list(
         steering_controller->behaviors,
         &wander);
@@ -21,10 +26,12 @@ Vector calculate_force(SteeringController* steering_controller){
     double weight_for_behavior = 1;
     double remaining_reservoir = steering_controller->owner->max_force;
     LinkedListNode* current_node = steering_controller->behaviors->head;
-    Vector (*behavior_function)(GameElement*);
+    Vector (*behavior_function)(World*, GameElement*);
     while(current_node){
-        behavior_function = (Vector (*)(GameElement*))current_node->data;
-        force_for_behavior = behavior_function(steering_controller->owner);
+        behavior_function = (Vector (*)(World*, GameElement*))current_node->data;
+        force_for_behavior = behavior_function(
+            world,
+            steering_controller->owner);
         force_for_behavior = vector_multiply_scalar(
                 force_for_behavior, 
                 weight_for_behavior);

@@ -51,7 +51,7 @@ typedef struct GameElementStruct {
 } GameElement;
 
 typedef struct WallStruct {
-    Vector point1, point2;
+    Line line;
 } Wall;
 
 Wall* init_wall(double, double, double, double);
@@ -78,6 +78,7 @@ void game_element_update_heading(GameElement*);
 void render1();
 
 //Steering Behaviors:
-Vector wander(GameElement* game_element);
+Vector wander(World* world, GameElement* game_element);
+Vector avoid_walls(World* world, GameElement* game_element);
 
 #endif
