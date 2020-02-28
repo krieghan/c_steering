@@ -36,5 +36,4 @@ Vector get_line_segment_intersection(Line, Line, bool*);
 
 double max(double, double);
 
-
 #endif

@@ -258,6 +258,3 @@ Vector flock(World* world, GameElement* game_element){
     printf("%f %f\n", force.x, force.y);
     return force;
 }
-
-
-

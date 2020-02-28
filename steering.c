@@ -13,11 +13,9 @@ SteeringController* init_steering_controller(GameElement* owner){
     append_to_list(
         steering_controller->behaviors,
         &avoid_walls);
-    /*
     append_to_list(
         steering_controller->behaviors,
         &flock);
-    */
     append_to_list(
         steering_controller->behaviors,
         &wander);
