@@ -7,8 +7,11 @@
 #include "linkedlist.h"
 #include "game_element.h"
 
+#define SHIP_TOTAL 10000
+
 World* world;
 Canvas* canvas;
+int ship_count = 0;
 
 
 void display(void)
@@ -92,10 +95,10 @@ void myInit (void)
         init_wall(0, 0, world->width, 0));
     append_to_list(
         world->walls,
-        init_wall(0, 0, 0, world->height));
+        init_wall(0, world->height, 0, 0));
     append_to_list(
         world->walls,
-        init_wall(0, world->height, world->width, world->height));
+        init_wall(world->width, world->height, 0, world->height));
     append_to_list(
         world->walls,
         init_wall(world->width, 0, world->width, world->height));
@@ -117,13 +120,31 @@ void onSize(int width, int height){
     setupView(width, height);
 }
  
+void plot_ship(int x, int y){
+    Vector position = {.x = x, .y = y};
+    Vector velocity = {.x = 0, .y = 0};
+    GameElement* ship = game_element_init(
+        position,
+        velocity,
+        10, 10,
+        1,
+        100, 2,
+        0, 1, 0,
+        &render1);
+    append_to_list(world->moving_elements, ship);
+    ship_count += 1;
+}
 
 void handleTime(int timeElapsed){
+    if (ship_count < SHIP_TOTAL){
+        plot_ship(200, 200);
+    }
     int current_time = glutGet(GLUT_ELAPSED_TIME);
     world_update(world, current_time);
-    glutTimerFunc(1, &handleTime, 0);
+    glutTimerFunc(10, &handleTime, 0);
     display();
 }
+
 
 void handleClick(int button, int state, int x, int y){
     int client_height, client_width;
@@ -144,17 +165,7 @@ void handleClick(int button, int state, int x, int y){
                 transformedY > world->height){
                 return;
             }
-            Vector position = {.x = transformedX, .y = transformedY};
-            Vector velocity = {.x = 0, .y = 0};
-            GameElement* ship = game_element_init(
-                position,
-                velocity,
-                10, 10,
-                1,
-                100, 2,
-                0, 1, 0,
-                &render1);
-            append_to_list(world->moving_elements, ship);
+            plot_ship(transformedX, transformedY);
         }
     }
 }
@@ -177,7 +188,7 @@ int main (int argc, char** argv)
       
     glutDisplayFunc(display); 
     glutReshapeFunc(onSize);
-    glutTimerFunc(1, &handleTime, 0);
+    glutTimerFunc(10, &handleTime, 0);
     glutMouseFunc(&handleClick);
 
     glutMainLoop(); 

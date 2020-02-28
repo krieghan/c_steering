@@ -87,21 +87,47 @@ void game_element_update_heading(GameElement* game_element){
 
 }
 
+LinkedList* game_element_get_neighbors(
+        World* world,
+        GameElement* game_element,
+        double neighbor_threshold){
+    LinkedList* neighbors = init_linked_list();
+    LinkedListNode* current_node = world->moving_elements->head;
+    GameElement* current_element;
+    while (current_node){
+        current_element = (GameElement*)current_node->data;
+        current_node = current_node->next;
+        if (current_element == game_element){
+            continue;
+        }
+        double current_distance = vector_get_distance(
+            current_element->position,
+            game_element->position);
+        if (current_distance < neighbor_threshold){
+            append_to_list(neighbors, current_element);
+        }
+    }
+    return neighbors;
+}
+
 Wall* init_wall(double x1, double y1, double x2, double y2){
     Wall* wall = malloc(sizeof(Wall));
+    Line line;
     Vector point1 = {.x = x1, .y = y1};
     Vector point2 = {.x = x2, .y = y2};
-    wall->point1 = point1;
-    wall->point2 = point2;
+    line.point1 = point1;
+    line.point2 = point2;
+    wall->line = line;
     return wall;
 }
 
 void wall_render(Wall* wall){
     glPushMatrix();
+    Line line = wall->line;
     glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_LINES);
-    glVertex2f(wall->point1.x, wall->point1.y);
-    glVertex2f(wall->point2.x, wall->point2.y);
+    glVertex2f(line.point1.x, line.point1.y);
+    glVertex2f(line.point2.x, line.point2.y);
     glEnd();
     glPopMatrix();
 }
