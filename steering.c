@@ -22,19 +22,23 @@ SteeringController* init_steering_controller(GameElement* owner){
     return steering_controller;
 }
 
-Vector calculate_force(SteeringController* steering_controller){
+Vector calculate_force(
+        SteeringController* steering_controller,
+        double timeElapsed){
     Vector force = {.x = 0, .y = 0};
     Vector force_for_behavior;
     double magnitude_for_behavior;
     double weight_for_behavior = 1;
     double remaining_reservoir = steering_controller->owner->max_force;
     LinkedListNode* current_node = steering_controller->behaviors->head;
-    Vector (*behavior_function)(World*, GameElement*);
+    Vector (*behavior_function)(World*, GameElement*, double);
     while(current_node){
-        behavior_function = (Vector (*)(World*, GameElement*))current_node->data;
+        behavior_function = 
+            (Vector (*)(World*, GameElement*, double))current_node->data;
         force_for_behavior = behavior_function(
             world,
-            steering_controller->owner);
+            steering_controller->owner,
+            timeElapsed);
         force_for_behavior = vector_multiply_scalar(
                 force_for_behavior, 
                 weight_for_behavior);

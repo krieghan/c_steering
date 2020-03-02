@@ -57,7 +57,9 @@ GameElement* game_element_init(
 
 void game_element_update(GameElement* game_element, int timeElapsed){
     Vector acceleration;
-    Vector force = calculate_force(game_element->steering_controller);
+    Vector force = calculate_force(
+        game_element->steering_controller,
+        timeElapsed);
     force = vector_truncate(force, game_element->max_force);
     acceleration = vector_multiply_scalar(
             force,  
@@ -94,13 +96,14 @@ LinkedList* game_element_get_neighbors(
     LinkedList* neighbors = init_linked_list();
     LinkedListNode* current_node = world->moving_elements->head;
     GameElement* current_element;
+    double current_distance;
     while (current_node){
         current_element = (GameElement*)current_node->data;
         current_node = current_node->next;
         if (current_element == game_element){
             continue;
         }
-        double current_distance = vector_get_distance(
+        current_distance = vector_get_manhattan_distance(
             current_element->position,
             game_element->position);
         if (current_distance < neighbor_threshold){

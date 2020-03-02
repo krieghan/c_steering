@@ -1,4 +1,5 @@
 #include <stdio.h> 
+
 #include <stdlib.h>
 #include <time.h>
 #include <GL/glut.h> 
@@ -7,7 +8,8 @@
 #include "linkedlist.h"
 #include "game_element.h"
 
-#define SHIP_TOTAL 10000
+#define SHIP_TOTAL 10
+#define UPDATE_RATE 1
 
 World* world;
 Canvas* canvas;
@@ -126,9 +128,9 @@ void plot_ship(int x, int y){
     GameElement* ship = game_element_init(
         position,
         velocity,
-        10, 10,
+        50, 50,
         1,
-        100, 2,
+        50, 10,
         0, 1, 0,
         &render1);
     append_to_list(world->moving_elements, ship);
@@ -137,11 +139,11 @@ void plot_ship(int x, int y){
 
 void handleTime(int timeElapsed){
     if (ship_count < SHIP_TOTAL){
-        plot_ship(200, 200);
+        plot_ship(world->width / 2, world->height / 2);
     }
     int current_time = glutGet(GLUT_ELAPSED_TIME);
     world_update(world, current_time);
-    glutTimerFunc(10, &handleTime, 0);
+    glutTimerFunc(UPDATE_RATE, &handleTime, 0);
     display();
 }
 
@@ -173,13 +175,13 @@ void handleClick(int button, int state, int x, int y){
 int main (int argc, char** argv) 
 { 
     srand(time(NULL));
-    world = world_init(500, 500);
+    world = world_init(5000, 5000);
     canvas = canvas_init(world);
     glutInit(&argc, argv); 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); 
       
     // giving window size in X- and Y- direction 
-    glutInitWindowSize(world->width, world->height); 
+    glutInitWindowSize(500, 500); 
     glutInitWindowPosition(0, 0); 
       
     // Giving name to window 
@@ -188,7 +190,7 @@ int main (int argc, char** argv)
       
     glutDisplayFunc(display); 
     glutReshapeFunc(onSize);
-    glutTimerFunc(10, &handleTime, 0);
+    glutTimerFunc(UPDATE_RATE, &handleTime, 0);
     glutMouseFunc(&handleClick);
 
     glutMainLoop(); 

@@ -32,6 +32,7 @@ void world_update(World* world, int current_time){
     LinkedListNode* current_node;
     current_node = world->moving_elements->head;
     int time_elapsed = current_time - world->current_time;
+    printf("framerate: %f\n", 1000 / (double)time_elapsed);
     world->current_time = current_time;
 
     while(current_node){

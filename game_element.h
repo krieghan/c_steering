@@ -58,7 +58,7 @@ Wall* init_wall(double, double, double, double);
 void wall_render(Wall*);
 
 SteeringController* init_steering_controller(GameElement*);
-Vector calculate_force(SteeringController*);
+Vector calculate_force(SteeringController*, double);
 
 
 GameElement* game_element_init(
@@ -79,7 +79,16 @@ LinkedList* game_element_get_neighbors(World*, GameElement*, double);
 void render1();
 
 //Steering Behaviors:
-Vector wander(World* world, GameElement* game_element);
-Vector avoid_walls(World* world, GameElement* game_element);
-Vector flock(World* world, GameElement* game_element);
+typedef struct SteeringBehaviorStruct {
+    Vector (*behavior)(World*, GameElement*, double);
+    double weight;
+} SteeringBehavior;
+
+SteeringBehavior* init_steering_behavior(
+    Vector (*)(World*, GameElement*, double),
+    weight);
+
+Vector wander(World*, GameElement*, double);
+Vector avoid_walls(World*, GameElement*, double);
+Vector flock(World*, GameElement*, double);
 #endif

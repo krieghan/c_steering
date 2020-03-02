@@ -9,6 +9,7 @@ void append_to_list(LinkedList* list, void* data){
     if (!list->head){
         list->head = node;
         list->tail = node;
+        list->size += 1;
         return;
     }
     list->tail->next = node;

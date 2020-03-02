@@ -9,16 +9,26 @@
 
 #define WANDER_DISTANCE 30
 #define WANDER_RADIUS 10
-#define WANDER_JITTER .03
+#define WANDER_JITTER .003
 #define RADIANS45 M_PI / 4
+#define NEIGHBOR_THRESHOLD 500
 
+SteeringBehavior* init_steering_behavior(
+        Vector (*behavior_function)(World*, GameElement*, double),
+        double weight){
+    SteeringBehavior* behavior = malloc(sizeof(SteeringBehavior));
+    behavior->behavior = behavior_function;
+    behavior->weight = weight;
+    return behavior;
+}
 
-Vector wander(World* world, GameElement* game_element){
+Vector wander(World* world, GameElement* game_element, double timeElapsed){
+    double jitterForTime = WANDER_JITTER * timeElapsed;
     Vector projectionVector = {.x = WANDER_DISTANCE, .y = 0};
     Vector centerToTargetVector = {.x = 0, .y = 0};
     Vector targetAdjustment = {
-        .x = ((double)(rand())/RAND_MAX*2.0-1.0) * WANDER_JITTER,
-        .y = ((double)(rand())/RAND_MAX*2.0-1.0) * WANDER_JITTER}; 
+        .x = ((double)(rand())/RAND_MAX*2.0-1.0) * jitterForTime,
+        .y = ((double)(rand())/RAND_MAX*2.0-1.0) * jitterForTime}; 
     centerToTargetVector = vector_set_magnitude(
         vector_add(
             centerToTargetVector,
@@ -62,7 +72,7 @@ void create_feelers(
     lines[2].point2 = right_point;
 }
 
-Vector avoid_walls(World* world, GameElement* game_element){
+Vector avoid_walls(World* world, GameElement* game_element, double timeElapsed){
     Line feelers[3];
     create_feelers(game_element, feelers);
     LinkedListNode* current_node;
@@ -166,9 +176,9 @@ Vector separate(World* world, GameElement* agent, LinkedList* neighbors){
                 neighbor_to_agent,
                 1);
             magnitude = 
-                max(agent->height, agent->width) / distance_to_neighbor;
+                (double)max(agent->height, agent->width) / distance_to_neighbor;
         }
-        vector_add(
+        cumulative_force = vector_add(
             cumulative_force,
             vector_multiply_scalar(
                 neighbor_heading_to_agent,
@@ -199,7 +209,7 @@ Vector align(World* world, GameElement* agent, LinkedList* neighbors){
     }
     cumulative_heading = vector_multiply_scalar(
         cumulative_heading,
-        (1 / neighbors->size));
+        (1.0 / neighbors->size));
 
     return cumulative_heading;
 }
@@ -234,18 +244,17 @@ Vector cohere(World* world, GameElement* agent, LinkedList* neighbors){
 
     Vector average_point = vector_multiply_scalar(
         cumulative_vector,
-        (1 / neighbors->size));
+        (1.0 / neighbors->size));
 
     return seek(world, agent, average_point);
 }
 
-Vector flock(World* world, GameElement* game_element){
-    double neighbor_threshold = 100;
+Vector flock(World* world, GameElement* game_element, double timeElapsed){
     Vector force;
     LinkedList* neighbors = game_element_get_neighbors(
             world,
             game_element,
-            neighbor_threshold);
+            NEIGHBOR_THRESHOLD);
     Vector separation_force = separate(world, game_element, neighbors);
     Vector alignment_force = align(world, game_element, neighbors);
     Vector cohesion_force = cohere(world, game_element, neighbors);
@@ -255,6 +264,6 @@ Vector flock(World* world, GameElement* game_element){
         vector_add(
             alignment_force,
             cohesion_force));
-    printf("%f %f\n", force.x, force.y);
+    //printf("%f %f\n", force.x, force.y);
     return force;
 }

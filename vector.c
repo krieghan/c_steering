@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include <math.h>
 #include "vector.h"
 
@@ -72,6 +73,12 @@ double vector_get_distance(Vector point1, Vector point2){
     double x_delta = point1.x - point2.x;
     double y_delta = point1.y - point2.y;
     return sqrt(pow(x_delta, 2) + pow(y_delta, 2));
+}
+
+double vector_get_manhattan_distance(Vector point1, Vector point2){
+    double x_delta = abs(point1.x - point2.x);
+    double y_delta = abs(point1.y - point2.y);
+    return x_delta + y_delta;
 }
 
 double vector_get_direction_radians(Vector vector){

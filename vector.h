@@ -29,6 +29,7 @@ Vector vector_set_magnitude(Vector, float);
 Vector vector_get_perp(Vector);
 double vector_get_direction_radians(Vector);
 double vector_get_distance(Vector, Vector);
+double vector_get_manhattan_distance(Vector, Vector);
 Vector vector_to_world_space(Vector, Vector, Vector);
 Vector matrix_transform_vector(Matrix, Vector);
 
