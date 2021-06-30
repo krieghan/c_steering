@@ -86,7 +86,7 @@ typedef struct SteeringBehaviorStruct {
 
 SteeringBehavior* init_steering_behavior(
     Vector (*)(World*, GameElement*, double),
-    weight);
+    double weight);
 
 Vector wander(World*, GameElement*, double);
 Vector avoid_walls(World*, GameElement*, double);
